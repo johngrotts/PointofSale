@@ -52,6 +52,7 @@ public class PointOfSale {
 	private DefaultListModel<Drink> drinks;
 	private JList drinkList;
 	private PrintWriter pWriter;
+	private JTextField orderIdBox;
 
 	/**
 	 * Launch the application.
@@ -284,20 +285,6 @@ public class PointOfSale {
 		//setup the JList
 		sandwiches = new DefaultListModel<Sandwich>(); 
 		
-		/**
-		 * Does this work?
-		 * 
-		JScrollPane scrollPane = new JScrollPane();
-		JList list = new JList();
-		scrollPane.setViewportView(list);
-		
-		JPanel container = new JPanel();
-		JScrollPane scrPane = new JScrollPane(container);
-		add(scrPane); // similar to getContentPane().add(scrPane);
-		// Now, you can add whatever you want to the container
-		STARTING  POINT
-		*/
-		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(366, 48, 303, 392);
 		frmPos.getContentPane().add(scrollPane);
@@ -321,14 +308,14 @@ public class PointOfSale {
 		
 	// Total
 		JLabel lblTotal = new JLabel("Total:");
-		lblTotal.setBounds(417, 568, 34, 22);
+		lblTotal.setBounds(417, 520, 34, 22);
 		frmPos.getContentPane().add(lblTotal);
 		
 		totalPrice = new JTextField();
 		double price = 0.00;
 		String priceString = String.valueOf(price);
 		totalPrice.setText(priceString);
-		totalPrice.setBounds(463, 568, 116, 22);
+		totalPrice.setBounds(463, 520, 116, 22);
 		frmPos.getContentPane().add(totalPrice);
 		totalPrice.setColumns(10);
 		
@@ -372,7 +359,7 @@ public class PointOfSale {
 	// Finalize Order
 		JLabel finalErrorLabel = new JLabel("");
 		finalErrorLabel.setForeground(Color.RED);
-		finalErrorLabel.setBounds(591, 539, 279, 16);
+		finalErrorLabel.setBounds(591, 491, 279, 16);
 		frmPos.getContentPane().add(finalErrorLabel);
 		
 		JButton btnFinalize = new JButton("Finalize Order");
@@ -416,8 +403,32 @@ public class PointOfSale {
 			}
 		});
 		btnFinalize.setForeground(new Color(220, 20, 60));
-		btnFinalize.setBounds(591, 568, 279, 22);
+		btnFinalize.setBounds(591, 520, 279, 22);
 		frmPos.getContentPane().add(btnFinalize);
+		
+	//Recall Order Pieces 
+		JLabel lblOrderId = new JLabel("Order Id:");
+		lblOrderId.setBounds(613, 574, 56, 16);
+		frmPos.getContentPane().add(lblOrderId);
+		
+		//text box for the order id number
+		orderIdBox = new JTextField();
+		orderIdBox.setBounds(681, 568, 73, 22);
+		frmPos.getContentPane().add(orderIdBox);
+		orderIdBox.setColumns(10);
+		
+		//button to recall an order
+		JButton btnRecallOrder = new JButton("Recall Order");
+		btnRecallOrder.setBounds(766, 565, 104, 25);
+		frmPos.getContentPane().add(btnRecallOrder);
+		btnRecallOrder.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Integer orderIdNum = Integer.parseInt(orderIdBox.getText());
+				Database.displayOrder(orderIdNum);
+			}
+		});
+		
+		
 	}
 	
 	
@@ -500,50 +511,8 @@ public class PointOfSale {
 		custName.setText("");
 		updatePrice();
 	}
-/*
-	// Saves the order to a database Code pieces from https://nodehead.com/java-how-to-connect-to-xampps-mysql-in-eclipse/
-	public void saveToDatabase(double total) {
-		String host = "jdbc:mysql:http://localhost:3306";
-		String username = "root";
-		String password = "";
-		//connect to the database
-		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-			Connection con = DriverManager.getConnection(host, username, password);
-			// creates a statement that can be used over and over again for running sql commands
-			Statement stmt = con.createStatement();
-			
-			//Name and Total
-            String orderQuery = "INSERT INTO pos_orders (name, total) VALUES" + 
-                    "(" + custName + "," + total + ")";
-            int orderNum = stmt.executeUpdate(orderQuery, Statement.RETURN_GENERATED_KEYS);
-            for (int i = 0; i < sandwiches.getSize(); i++) {			
-            	stmt.execute("INSERT INTO sandwiches (order_id, type, bun, cheese, lettuce, tomato, pickle, onion, ketchup, mayo, cost) VALUES" + 
-                    "(" + orderNum + "," + sandwiches.getElementAt(i).getType() +
-                    "," + sandwiches.getElementAt(i).getBun() +
-                    "," + sandwiches.getElementAt(i).getCheese() +
-                    "," + sandwiches.getElementAt(i).getLettuce() + 
-                    "," + sandwiches.getElementAt(i).getTomato() + 
-                    "," + sandwiches.getElementAt(i).getPickle() + 
-                    "," + sandwiches.getElementAt(i).getOnion() + 
-                    "," + sandwiches.getElementAt(i).getKetchup() + 
-                    "," + sandwiches.getElementAt(i).getMayo() + 
-                    "," + sandwiches.getElementAt(i).getCost() + ")");
-			}
-            for (int i = 0; i < drinks.getSize(); i++) {			
-            	stmt.execute("INSERT INTO sandwiches (order_id, type, style, size, price) VALUES" + 
-                    "(" + orderNum + "," + drinks.getElementAt(i).getType() +
-                    "," + drinks.getElementAt(i).getStyle() +
-                    "," + drinks.getElementAt(i).getSize() +
-                    "," + drinks.getElementAt(i).getPrice() + ")");
-			}
-			
-		}
-		catch (Exception err) { //or fail
-			err.printStackTrace();
-		}
-	}
-*/
+
+	//write the order to the print file
 	public void fileWrite() {
 		String date = new Date().toString();
 		Date fileDate = new Date();
@@ -610,8 +579,5 @@ public class PointOfSale {
 			//e.printStackTrace();
 			System.out.println("Could not write to file");
 		}
-		
-		
-		
 	}
 }
